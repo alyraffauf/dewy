@@ -87,6 +87,7 @@ export default function App() {
 	const [loading, setLoading] = useState(true);
 	const [input, setInput] = useState('');
 	const [message, setMessage] = useState('');
+	const [editingField, setEditingField] = useState(false);
 
 	const refresh = useCallback(async () => {
 		if (view.type === 'edit') {
@@ -161,22 +162,31 @@ export default function App() {
 					{viewLabel}
 				</Text>
 				{isEditing ? (
-					<Box
-						flexDirection="column"
-						borderStyle="round"
-						borderColor="cyan"
-						paddingX={1}
-						width={50}
-					>
-						<EditView
-							task={view.task}
-							api={api}
-							onBack={() => {
-								setView({type: 'filter', query: homeFilter});
-								refresh();
-							}}
-						/>
-					</Box>
+					<>
+						<Box
+							flexDirection="column"
+							borderStyle="round"
+							borderColor="cyan"
+							paddingX={1}
+							width={50}
+						>
+							<EditView
+								task={view.task}
+								api={api}
+								onBack={() => {
+									setView({type: 'filter', query: homeFilter});
+									refresh();
+								}}
+								onEditingChange={setEditingField}
+							/>
+						</Box>
+						<Text dimColor>
+							{'  '}
+							{editingField
+								? 'Enter to save ∙ Escape to cancel'
+								: 'Enter to edit ∙ Escape to go back'}
+						</Text>
+					</>
 				) : (
 					<>
 						<Box

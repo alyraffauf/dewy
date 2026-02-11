@@ -8,6 +8,7 @@ type EditViewProps = {
 	task: Task;
 	api: TodoistApi;
 	onBack: () => void;
+	onEditingChange: (editing: boolean) => void;
 };
 
 const fields = [
@@ -72,10 +73,20 @@ function buildUpdateArgs(key: string, value: string) {
 	}
 }
 
-export default function EditView({task, api, onBack}: EditViewProps) {
+export default function EditView({
+	task,
+	api,
+	onBack,
+	onEditingChange,
+}: EditViewProps) {
 	const [cursor, setCursor] = useState(0);
-	const [editing, setEditing] = useState(false);
+	const [editing, _setEditing] = useState(false);
 	const [editValue, setEditValue] = useState('');
+
+	const setEditing = (value: boolean) => {
+		_setEditing(value);
+		onEditingChange(value);
+	};
 	const [fieldValues, setFieldValues] = useState(() =>
 		Object.fromEntries(fields.map(f => [f.key, getFieldValue(task, f.key)])),
 	);
@@ -140,12 +151,6 @@ export default function EditView({task, api, onBack}: EditViewProps) {
 					)}
 				</Text>
 			))}
-			<Text>{''}</Text>
-			<Text dimColor>
-				{editing
-					? '  Enter to save ∙ Escape to cancel'
-					: '  Enter to edit ∙ Escape to go back'}
-			</Text>
 		</>
 	);
 }
