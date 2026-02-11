@@ -1,12 +1,11 @@
 import React from 'react';
-import {Box, Text} from 'ink';
+import {Text} from 'ink';
 import {type Task} from '@doist/todoist-api-typescript';
 import {priorityColor} from './utils.js';
 
 type TaskListViewProps = {
 	tasks: Task[];
 	projects: Map<string, string>;
-	viewLabel: string;
 };
 
 function ProjectLabel({name}: {name: string | undefined}) {
@@ -50,33 +49,19 @@ function Priority({priority}: {priority: number}) {
 	);
 }
 
-export default function TaskListView({
-	tasks,
-	projects,
-	viewLabel,
-}: TaskListViewProps) {
+export default function TaskListView({tasks, projects}: TaskListViewProps) {
 	return (
 		<>
-			<Text bold color="cyan">
-				{viewLabel}
-			</Text>
-			<Box
-				flexDirection="column"
-				borderStyle="round"
-				borderColor="cyan"
-				paddingX={1}
-			>
-				{tasks.length === 0 && <Text dimColor>No tasks</Text>}
-				{tasks.map((task, i) => (
-					<Text key={task.id}>
-						<Text dimColor>{i + 1}.</Text> {task.content}
-						<ProjectLabel name={projects.get(task.projectId)} />
-						<Labels labels={task.labels} />
-						<DueDate date={task.due?.date} />
-						<Priority priority={task.priority} />
-					</Text>
-				))}
-			</Box>
+			{tasks.length === 0 && <Text dimColor>No tasks</Text>}
+			{tasks.map((task, i) => (
+				<Text key={task.id}>
+					<Text dimColor>{i + 1}.</Text> {task.content}
+					<ProjectLabel name={projects.get(task.projectId)} />
+					<Labels labels={task.labels} />
+					<DueDate date={task.due?.date} />
+					<Priority priority={task.priority} />
+				</Text>
+			))}
 		</>
 	);
 }

@@ -20,6 +20,60 @@ if (!apiToken) {
 
 const api = new TodoistApi(apiToken);
 
+function CommandHints({input}: {input: string}) {
+	if (input === '?') {
+		return commands.map(c => (
+			<Text key={c.prefix} dimColor>
+				{'  '}
+				{c.hint}
+			</Text>
+		));
+	}
+
+	if (input) {
+		return commands
+			.filter(c => c.prefix.startsWith(input))
+			.map(c => (
+				<Text key={c.prefix} dimColor>
+					{'  '}
+					{c.hint}
+				</Text>
+			));
+	}
+
+	return <Text dimColor>{'  type ? for help'}</Text>;
+}
+
+function CommandInput({
+	input,
+	setInput,
+	onSubmit,
+}: {
+	input: string;
+	setInput: (value: string) => void;
+	onSubmit: (value: string) => Promise<void>;
+}) {
+	return (
+		<>
+			<Box
+				flexDirection="column"
+				borderStyle="single"
+				borderColor="gray"
+				borderLeft={false}
+				borderRight={false}
+			>
+				<Box>
+					<Text bold color="white">
+						{'> '}
+					</Text>
+					<TextInput value={input} onChange={setInput} onSubmit={onSubmit} />
+				</Box>
+			</Box>
+			<CommandHints input={input} />
+		</>
+	);
+}
+
 export default function App() {
 	const {exit} = useApp();
 	const [tasks, setTasks] = useState<Task[]>([]);
@@ -98,73 +152,51 @@ export default function App() {
 			? `dewy ∙ edit: ${view.task.content}`
 			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query}`;
 
-	if (view.type === 'edit') {
-		return (
-			<Box flexDirection="column" paddingLeft={2}>
-				<Text bold color="cyan">
-					{viewLabel}
-				</Text>
-				<Box
-					flexDirection="column"
-					borderStyle="round"
-					borderColor="cyan"
-					paddingX={1}
-				>
-					<EditView
-						task={view.task}
-						api={api}
-						onBack={() => {
-							setView({type: 'filter', query: homeFilter});
-							refresh();
-						}}
-					/>
-				</Box>
-			</Box>
-		);
-	}
+	const isEditing = view.type === 'edit';
 
 	return (
 		<Box flexDirection="column">
 			<Box flexDirection="column" paddingLeft={2}>
-				<TaskListView tasks={tasks} projects={projects} viewLabel={viewLabel} />
-				{message && <Text color="yellow">{message}</Text>}
+				<Text bold color="cyan">
+					{viewLabel}
+				</Text>
+				{isEditing ? (
+					<Box
+						flexDirection="column"
+						borderStyle="round"
+						borderColor="cyan"
+						paddingX={1}
+						width={50}
+					>
+						<EditView
+							task={view.task}
+							api={api}
+							onBack={() => {
+								setView({type: 'filter', query: homeFilter});
+								refresh();
+							}}
+						/>
+					</Box>
+				) : (
+					<>
+						<Box
+							flexDirection="column"
+							borderStyle="round"
+							borderColor="cyan"
+							paddingX={1}
+						>
+							<TaskListView tasks={tasks} projects={projects} />
+						</Box>
+						{message && <Text color="yellow">{message}</Text>}
+					</>
+				)}
 			</Box>
-			<Box
-				flexDirection="column"
-				borderStyle="single"
-				borderColor="gray"
-				borderLeft={false}
-				borderRight={false}
-			>
-				<Box>
-					<Text bold color="white">
-						{'> '}
-					</Text>
-					<TextInput
-						value={input}
-						onChange={setInput}
-						onSubmit={handleSubmit}
-					/>
-				</Box>
-			</Box>
-			{input === '?' ? (
-				commands.map(c => (
-					<Text key={c.prefix} dimColor>
-						{'  '}
-						{c.hint}
-					</Text>
-				))
-			) : input ? (
-				commands
-					.filter(c => c.prefix.startsWith(input))
-					.map(c => (
-						<Text key={c.prefix} dimColor>
-							{'  '}
-							{c.hint}
-						</Text>
-					))
-			) : (
-				<Text dimColor>{'  type ? for help'}</Text>
+			{!isEditing && (
+				<CommandInput
+					input={input}
+					setInput={setInput}
+					onSubmit={handleSubmit}
+				/>
 			)}
 		</Box>
 	);

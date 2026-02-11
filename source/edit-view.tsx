@@ -11,15 +11,21 @@ type EditViewProps = {
 };
 
 const fields = [
-	{key: 'content', label: 'Title', color: () => undefined},
-	{key: 'description', label: 'Description', color: () => 'gray'},
-	{key: 'due', label: 'Due', color: () => 'magenta'},
+	{key: 'content', label: 'Title', placeholder: '', color: () => undefined},
+	{
+		key: 'description',
+		label: 'Description',
+		placeholder: 'n/a',
+		color: () => 'gray',
+	},
+	{key: 'due', label: 'Due', placeholder: 'no date', color: () => 'magenta'},
 	{
 		key: 'priority',
 		label: 'Priority',
+		placeholder: 'none',
 		color: (v: string) => priorityColor(Number.parseInt(v, 10)),
 	},
-	{key: 'labels', label: 'Labels', color: () => 'yellow'},
+	{key: 'labels', label: 'Labels', placeholder: 'none', color: () => 'yellow'},
 ];
 
 function getFieldValue(task: Task, key: string): string {
@@ -125,10 +131,12 @@ export default function EditView({task, api, onBack}: EditViewProps) {
 							onChange={setEditValue}
 							onSubmit={handleSave}
 						/>
-					) : (
+					) : fieldValues[f.key] ? (
 						<Text color={f.color(fieldValues[f.key] ?? '')}>
 							{fieldValues[f.key]}
 						</Text>
+					) : (
+						<Text dimColor>{f.placeholder}</Text>
 					)}
 				</Text>
 			))}
