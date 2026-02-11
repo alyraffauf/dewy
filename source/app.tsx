@@ -1,11 +1,10 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Box, Text, useApp} from 'ink';
-import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {type View, commands} from './commands.js';
-import {priorityColor} from './utils.js';
 import {loadConfig, configPath} from './config.js';
 import EditView from './edit-view.js';
+import TaskListView from './task-list-view.js';
 
 const config = loadConfig();
 const apiToken = config?.apiToken ?? process.env['TODOIST_API_TOKEN'];
@@ -117,60 +116,14 @@ export default function App() {
 			<Text bold color="cyan">
 				{viewLabel}
 			</Text>
-			{tasks.map((task, i) => (
-				<Text key={task.id}>
-					<Text dimColor>{i + 1}.</Text> {task.content}
-					{projects.get(task.projectId) ? (
-						<Text dimColor color="blue">
-							{' '}
-							#{projects.get(task.projectId)}
-						</Text>
-					) : (
-						''
-					)}
-					{task.labels.length > 0 ? (
-						<Text dimColor color="yellow">
-							{' '}
-							{task.labels.map(l => `@${l}`).join(' ')}
-						</Text>
-					) : (
-						''
-					)}
-					{task.due?.date ? (
-						<Text dimColor color="magenta">
-							{' '}
-							{task.due.date}
-						</Text>
-					) : (
-						''
-					)}
-					{task.priority > 1 ? (
-						<Text dimColor color={priorityColor(5 - task.priority)}>
-							{' '}
-							p{5 - task.priority}
-						</Text>
-					) : (
-						''
-					)}
-				</Text>
-			))}
-			{message && <Text color="yellow">{message}</Text>}
-			<Box>
-				<Text bold color="green">
-					{'> '}
-				</Text>
-				<TextInput value={input} onChange={setInput} onSubmit={handleSubmit} />
-			</Box>
-
-			{input &&
-				commands
-					.filter(c => c.prefix.startsWith(input))
-					.map(c => (
-						<Text key={c.prefix} dimColor>
-							{'  '}
-							{c.hint}
-						</Text>
-					))}
+			<TaskListView
+				tasks={tasks}
+				projects={projects}
+				message={message}
+				input={input}
+				setInput={setInput}
+				onSubmit={handleSubmit}
+			/>
 		</Box>
 	);
 }
