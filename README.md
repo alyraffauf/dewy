@@ -4,6 +4,8 @@
 
 A fast, minimal TUI for Todoist built with React.js + Ink + Typescript.
 
+<img src="media/screenshot.png" alt="dewy screenshot" width="600" />
+
 </div>
 
 ## Features
