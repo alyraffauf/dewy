@@ -18,12 +18,14 @@ export type CommandContext = {
 };
 type Command = {
 	prefix: string;
+	hint: string;
 	run: (args: string, ctx: CommandContext) => Promise<void>;
 };
 
 export const commands: Command[] = [
 	{
 		prefix: 'done ',
+		hint: 'done <number>',
 		run: async (args, {api, tasks, setMessage, refresh}) => {
 			const num = Number.parseInt(args, 10);
 			const task = tasks[num - 1];
@@ -38,6 +40,7 @@ export const commands: Command[] = [
 	},
 	{
 		prefix: 'add ',
+		hint: 'add <task>',
 		run: async (args, {api, setMessage, refresh}) => {
 			await api.quickAddTask({text: args});
 			setMessage(`+ ${args}`);
@@ -46,6 +49,7 @@ export const commands: Command[] = [
 	},
 	{
 		prefix: 'refresh',
+		hint: 'refresh',
 		run: async (_args, {refresh, setMessage}) => {
 			await refresh();
 			setMessage('↻ refreshed');
@@ -53,6 +57,7 @@ export const commands: Command[] = [
 	},
 	{
 		prefix: 'project ',
+		hint: 'project <project>',
 		run: async (args, {projects, setMessage, setView}) => {
 			const projectId = [...projects.entries()].find(
 				([, n]) => n.toLowerCase() === args.toLowerCase(),
@@ -68,6 +73,7 @@ export const commands: Command[] = [
 
 	{
 		prefix: 'today',
+		hint: 'today',
 		run: async (_args, {setView, setMessage}) => {
 			setView({type: 'filter', query: 'today'});
 			setMessage('→ today');
@@ -76,6 +82,7 @@ export const commands: Command[] = [
 
 	{
 		prefix: 'home',
+		hint: 'home',
 		run: async (_args, {setView, setMessage, homeFilter}) => {
 			setView({type: 'filter', query: homeFilter});
 			setMessage('→ home');
@@ -84,6 +91,7 @@ export const commands: Command[] = [
 
 	{
 		prefix: 'quit',
+		hint: 'quit',
 		run: async (_args, {exit}) => {
 			exit();
 		},

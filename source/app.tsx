@@ -133,6 +133,16 @@ export default function App() {
 				</Text>
 				<TextInput value={input} onChange={setInput} onSubmit={handleSubmit} />
 			</Box>
+
+			{input &&
+				commands
+					.filter(c => c.prefix.startsWith(input))
+					.map(c => (
+						<Text key={c.prefix} dimColor>
+							{'  '}
+							{c.hint}
+						</Text>
+					))}
 		</Box>
 	);
 }
