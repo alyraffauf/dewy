@@ -19,7 +19,7 @@ A fast, minimal TUI for Todoist built with React.js + Ink + Typescript.
 ## Install
 
 ```bash
-npm install --global dewy
+npm install --global @alyraffauf/dewy
 ```
 
 Or with Nix:
