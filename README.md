@@ -10,8 +10,8 @@ A fast, minimal TUI for Todoist built with React.js + Ink + Typescript.
 
 ## Features
 
-- **Filter views** — browse tasks by Todoist filter queries like `today`, `overdue`, or custom filters
-- **Project views** — jump to any project by name
+- **Filter views** — browse tasks by Todoist filter queries like `today`, `overdue`, `#ProjectName`, or custom filters
+- **Task editing** — edit any task's title, description, due date, priority, and labels inline
 - **Quick add** — add tasks using Todoist's quick add syntax (dates, labels, projects all work)
 - **Smart hints** — command suggestions appear as you type
 - **XDG config** — simple JSON config at `~/.config/dewy/config.json`
@@ -20,6 +20,12 @@ A fast, minimal TUI for Todoist built with React.js + Ink + Typescript.
 
 ```bash
 npm install --global dewy
+```
+
+Or with Nix:
+
+```bash
+nix run github:alyraffauf/dewy
 ```
 
 ## Quick Start
@@ -56,6 +62,7 @@ dewy
 |---------|-------------|
 | `add <task>` | Add a task via quick add |
 | `done <number>` | Complete a task by its number |
+| `edit <number>` | Edit a task's fields inline |
 | `filter <query>` | View tasks matching a Todoist filter |
 | `today` | View today's tasks |
 | `home` | View the home filter |
