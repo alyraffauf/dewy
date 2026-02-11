@@ -48,6 +48,14 @@ export const commands: Command[] = [
 		},
 	},
 	{
+		prefix: 'filter ',
+		hint: 'filter <query>',
+		run: async (args, {setMessage, setView}) => {
+			setView({type: 'filter', query: args});
+			setMessage('⊳ filtered');
+		},
+	},
+	{
 		prefix: 'refresh',
 		hint: 'refresh',
 		run: async (_args, {refresh, setMessage}) => {
