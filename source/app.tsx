@@ -108,6 +108,14 @@ export default function App() {
 					) : (
 						''
 					)}
+					{task.due?.date ? (
+						<Text dimColor color="red">
+							{' '}
+							{task.due.date}
+						</Text>
+					) : (
+						''
+					)}
 				</Text>
 			))}
 			{message && <Text color="yellow">{message}</Text>}
