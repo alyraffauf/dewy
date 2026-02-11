@@ -7,6 +7,7 @@ import {loadConfig, configPath} from './config.js';
 
 const config = loadConfig();
 const apiToken = config?.apiToken ?? process.env['TODOIST_API_TOKEN'];
+const homeFilter = config?.homeFilter ?? 'today';
 
 if (!apiToken) {
 	console.error(
@@ -26,7 +27,7 @@ export default function App() {
 		{type: 'filter'; query: string} | {type: 'project'; projectId: string}
 	>({
 		type: 'filter',
-		query: 'today',
+		query: homeFilter,
 	});
 
 	const [loading, setLoading] = useState(true);
@@ -65,6 +66,7 @@ export default function App() {
 			api,
 			tasks,
 			projects,
+			homeFilter,
 			setMessage,
 			refresh,
 			setView,

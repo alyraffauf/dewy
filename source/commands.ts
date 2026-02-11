@@ -4,6 +4,7 @@ export type CommandContext = {
 	api: TodoistApi;
 	tasks: Task[];
 	projects: Map<string, string>;
+	homeFilter: string;
 	setMessage: (msg: string) => void;
 
 	refresh: () => Promise<void>;
@@ -72,6 +73,15 @@ export const commands: Command[] = [
 			setMessage('Viewing today');
 		},
 	},
+
+	{
+		prefix: 'home',
+		run: async (_args, {setView, setMessage, homeFilter}) => {
+			setView({type: 'filter', query: homeFilter});
+			setMessage('Viewing home');
+		},
+	},
+
 	{
 		prefix: 'quit',
 		run: async (_args, {exit}) => {

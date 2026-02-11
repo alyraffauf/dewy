@@ -5,6 +5,7 @@ import xdg from '@folder/xdg';
 
 export type Config = {
 	apiToken: string;
+	homeFilter?: string;
 };
 
 const dirs = xdg({subdir: 'dewy'}) as {config: string};
