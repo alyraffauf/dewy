@@ -29,7 +29,7 @@ export const commands: Command[] = [
 			const task = tasks[num - 1];
 			if (task) {
 				await api.closeTask(task.id);
-				setMessage(`Completed: ${task.content}`);
+				setMessage(`✓ ${task.content}`);
 				await refresh();
 			} else {
 				setMessage(`No task #${num}`);
@@ -40,7 +40,7 @@ export const commands: Command[] = [
 		prefix: 'add ',
 		run: async (args, {api, setMessage, refresh}) => {
 			await api.quickAddTask({text: args});
-			setMessage(`Added: ${args}`);
+			setMessage(`+ ${args}`);
 			await refresh();
 		},
 	},
@@ -48,7 +48,7 @@ export const commands: Command[] = [
 		prefix: 'refresh',
 		run: async (_args, {refresh, setMessage}) => {
 			await refresh();
-			setMessage('Refreshed');
+			setMessage('↻ refreshed');
 		},
 	},
 	{
@@ -59,7 +59,7 @@ export const commands: Command[] = [
 			)?.[0];
 			if (projectId) {
 				setView({type: 'project', projectId});
-				setMessage(`Viewing project: ${args}`);
+				setMessage(`→ #${args}`);
 			} else {
 				setMessage(`Project not found: ${args}`);
 			}
@@ -70,7 +70,7 @@ export const commands: Command[] = [
 		prefix: 'today',
 		run: async (_args, {setView, setMessage}) => {
 			setView({type: 'filter', query: 'today'});
-			setMessage('Viewing today');
+			setMessage('→ today');
 		},
 	},
 
@@ -78,7 +78,7 @@ export const commands: Command[] = [
 		prefix: 'home',
 		run: async (_args, {setView, setMessage, homeFilter}) => {
 			setView({type: 'filter', query: homeFilter});
-			setMessage('Viewing home');
+			setMessage('→ home');
 		},
 	},
 

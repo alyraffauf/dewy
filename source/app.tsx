@@ -87,8 +87,16 @@ export default function App() {
 		return <Text>Loading tasks...</Text>;
 	}
 
+	const viewLabel =
+		view.type === 'project'
+			? `dewy ∙ #${projects.get(view.projectId) ?? view.projectId}`
+			: `dewy ∙ ${view.query}`;
+
 	return (
 		<Box flexDirection="column">
+			<Text bold color="cyan">
+				{viewLabel}
+			</Text>
 			{tasks.map((task, i) => (
 				<Text key={task.id}>
 					<Text dimColor>{i + 1}.</Text> {task.content}
