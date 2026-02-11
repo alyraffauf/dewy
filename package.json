@@ -2,7 +2,9 @@
 	"name": "@alyraffauf/dewy",
 	"version": "0.1.0",
 	"license": "GPL-3.0-or-later",
-	"bin": "dist/cli.js",
+	"bin": {
+		"dewy": "dist/cli.js"
+	},
 	"type": "module",
 	"engines": {
 		"node": ">=16"
