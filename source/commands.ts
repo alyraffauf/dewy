@@ -1,5 +1,7 @@
 import {type TodoistApi, type Task} from '@doist/todoist-api-typescript';
 
+export type View = {type: 'filter'; query: string} | {type: 'edit'; task: Task};
+
 export type CommandContext = {
 	api: TodoistApi;
 	tasks: Task[];
@@ -8,12 +10,7 @@ export type CommandContext = {
 	setMessage: (msg: string) => void;
 
 	refresh: () => Promise<void>;
-	setView: (
-		view:
-			| {type: 'filter'; query: string}
-			| {type: 'project'; projectId: string},
-	) => void;
-
+	setView: (view: View) => void;
 	exit: () => void;
 };
 type Command = {
@@ -38,6 +35,21 @@ export const commands: Command[] = [
 			}
 		},
 	},
+
+	{
+		prefix: 'edit ',
+		hint: 'edit <number>',
+		run: async (args, {tasks, setView, setMessage}) => {
+			const num = Number.parseInt(args, 10);
+			const task = tasks[num - 1];
+			if (task) {
+				setView({type: 'edit', task});
+			} else {
+				setMessage(`No task #${num}`);
+			}
+		},
+	},
+
 	{
 		prefix: 'add ',
 		hint: 'add <task>',
@@ -61,21 +73,6 @@ export const commands: Command[] = [
 		run: async (_args, {refresh, setMessage}) => {
 			await refresh();
 			setMessage('↻ refreshed');
-		},
-	},
-	{
-		prefix: 'project ',
-		hint: 'project <project>',
-		run: async (args, {projects, setMessage, setView}) => {
-			const projectId = [...projects.entries()].find(
-				([, n]) => n.toLowerCase() === args.toLowerCase(),
-			)?.[0];
-			if (projectId) {
-				setView({type: 'project', projectId});
-				setMessage(`→ #${args}`);
-			} else {
-				setMessage(`Project not found: ${args}`);
-			}
 		},
 	},
 

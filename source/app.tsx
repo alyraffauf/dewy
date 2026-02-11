@@ -2,8 +2,10 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Box, Text, useApp} from 'ink';
 import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
-import {commands} from './commands.js';
+import {type View, commands} from './commands.js';
+import {priorityColor} from './utils.js';
 import {loadConfig, configPath} from './config.js';
+import EditView from './edit-view.js';
 
 const config = loadConfig();
 const apiToken = config?.apiToken ?? process.env['TODOIST_API_TOKEN'];
@@ -23,9 +25,7 @@ export default function App() {
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [projects, setProjects] = useState<Map<string, string>>(new Map());
 
-	const [view, setView] = useState<
-		{type: 'filter'; query: string} | {type: 'project'; projectId: string}
-	>({
+	const [view, setView] = useState<View>({
 		type: 'filter',
 		query: homeFilter,
 	});
@@ -35,12 +35,14 @@ export default function App() {
 	const [message, setMessage] = useState('');
 
 	const refresh = useCallback(async () => {
+		if (view.type === 'edit') {
+			return;
+		}
+
 		setLoading(true);
 
 		const [taskResponse, projectResponse] = await Promise.all([
-			view.type === 'filter'
-				? api.getTasksByFilter({query: view.query})
-				: api.getTasks({projectId: view.projectId}),
+			api.getTasksByFilter({query: view.query}),
 			api.getProjects(),
 		]);
 
@@ -88,9 +90,27 @@ export default function App() {
 	}
 
 	const viewLabel =
-		view.type === 'project'
-			? `dewy ∙ #${projects.get(view.projectId) ?? view.projectId}`
+		view.type === 'edit'
+			? `dewy ∙ edit: ${view.task.content}`
 			: `dewy ∙ ${view.query}`;
+
+	if (view.type === 'edit') {
+		return (
+			<Box flexDirection="column">
+				<Text bold color="cyan">
+					{viewLabel}
+				</Text>
+				<EditView
+					task={view.task}
+					api={api}
+					onBack={() => {
+						setView({type: 'filter', query: homeFilter});
+						refresh();
+					}}
+				/>
+			</Box>
+		);
+	}
 
 	return (
 		<Box flexDirection="column">
@@ -117,9 +137,17 @@ export default function App() {
 						''
 					)}
 					{task.due?.date ? (
-						<Text dimColor color="red">
+						<Text dimColor color="magenta">
 							{' '}
 							{task.due.date}
+						</Text>
+					) : (
+						''
+					)}
+					{task.priority > 1 ? (
+						<Text dimColor color={priorityColor(5 - task.priority)}>
+							{' '}
+							p{5 - task.priority}
 						</Text>
 					) : (
 						''

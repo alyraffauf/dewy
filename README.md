@@ -54,7 +54,6 @@ dewy
 |---------|-------------|
 | `add <task>` | Add a task via quick add |
 | `done <number>` | Complete a task by its number |
-| `project <name>` | View tasks in a project |
 | `filter <query>` | View tasks matching a Todoist filter |
 | `today` | View today's tasks |
 | `home` | View the home filter |
