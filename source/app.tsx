@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {Box, Text, useApp} from 'ink';
 import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
+import {commands} from './commands.js';
 
 const token = process.env['TODOIST_API_TOKEN'];
 if (!token) {
@@ -15,15 +16,25 @@ export default function App() {
 	const {exit} = useApp();
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [projects, setProjects] = useState<Map<string, string>>(new Map());
+
+	const [view, setView] = useState<
+		{type: 'filter'; query: string} | {type: 'project'; projectId: string}
+	>({
+		type: 'filter',
+		query: 'today',
+	});
+
 	const [loading, setLoading] = useState(true);
 	const [input, setInput] = useState('');
 	const [message, setMessage] = useState('');
 
-	const fetchTasks = useCallback(async () => {
+	const refresh = useCallback(async () => {
 		setLoading(true);
 
 		const [taskResponse, projectResponse] = await Promise.all([
-			api.getTasksByFilter({query: 'today'}),
+			view.type === 'filter'
+				? api.getTasksByFilter({query: view.query})
+				: api.getTasks({projectId: view.projectId}),
 			api.getProjects(),
 		]);
 
@@ -34,39 +45,32 @@ export default function App() {
 
 		setProjects(projectMap);
 		setTasks(taskResponse.results);
-
 		setLoading(false);
-	}, []);
+	}, [view]);
 
 	useEffect(() => {
-		fetchTasks();
-	}, [fetchTasks]);
+		refresh();
+	}, [refresh]);
 
 	const handleSubmit = async (value: string) => {
 		const trimmed = value.trim();
 		setInput('');
 
-		if (trimmed.startsWith('done ')) {
-			// "done 2" → complete task #2
-			const num = Number.parseInt(trimmed.slice(5), 10);
-			const task = tasks[num - 1]; // arrays are 0-indexed, display is 1-indexed
-			if (task) {
-				await api.closeTask(task.id);
-				setMessage(`Completed: ${task.content}`);
-				await fetchTasks(); // refresh the list
-			} else {
-				setMessage(`No task #${num}`);
-			}
-		} else if (trimmed.startsWith('add ')) {
-			const text = trimmed.slice(4);
-			await api.quickAddTask({text});
-			setMessage(`Added: ${text}`);
-			await fetchTasks();
-		} else if (trimmed === 'refresh') {
-			await fetchTasks();
-			setMessage('Refreshed');
-		} else if (trimmed === 'quit') {
-			exit();
+		const ctx = {
+			api,
+			tasks,
+			projects,
+			setMessage,
+			refresh,
+			setView,
+			exit,
+		};
+
+		const command = commands.find(c => trimmed.startsWith(c.prefix));
+
+		if (command) {
+			const args = trimmed.slice(command.prefix.length);
+			await command.run(args, ctx);
 		} else {
 			setMessage(`Unknown command: ${trimmed}`);
 		}
