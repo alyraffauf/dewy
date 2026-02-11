@@ -16,7 +16,7 @@
       perSystem = {pkgs, ...}: {
         packages.default = pkgs.buildNpmPackage {
           pname = "dewy";
-          version = "0.0.0";
+          version = "dev";
           src = ./.;
           npmDepsHash = "sha256-87WINB2MVHkBRcDiV8Sm9lEWrQR0N3QtzEcX3/Vb9Zg=";
           nodejs = pkgs.nodejs_20;
