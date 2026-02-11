@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Box, Text, useInput} from 'ink';
+import {Text, useInput} from 'ink';
 import TextInput from 'ink-text-input';
 import {type TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {priorityColor} from './utils.js';
@@ -98,7 +98,7 @@ export default function EditView({task, api, onBack}: EditViewProps) {
 
 			if (key.return && !editing) {
 				setEditing(true);
-				setEditValue(getFieldValue(task, fields[cursor]!.key));
+				setEditValue(fieldValues[fields[cursor]!.key] ?? '');
 			}
 		},
 		{isActive: !editing},
@@ -114,7 +114,7 @@ export default function EditView({task, api, onBack}: EditViewProps) {
 	);
 
 	return (
-		<Box flexDirection="column">
+		<>
 			{fields.map((f, i) => (
 				<Text key={f.key}>
 					{cursor === i ? '> ' : '  '}
@@ -132,11 +132,12 @@ export default function EditView({task, api, onBack}: EditViewProps) {
 					)}
 				</Text>
 			))}
+			<Text>{''}</Text>
 			<Text dimColor>
 				{editing
 					? '  Enter to save ∙ Escape to cancel'
 					: '  Enter to edit ∙ Escape to go back'}
 			</Text>
-		</Box>
+		</>
 	);
 }

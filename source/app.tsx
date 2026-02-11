@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Box, Text, useApp} from 'ink';
+import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {type View, commands} from './commands.js';
 import {loadConfig, configPath} from './config.js';
@@ -63,6 +64,10 @@ export default function App() {
 		const trimmed = value.trim();
 		setInput('');
 
+		if (!trimmed || trimmed === '?') {
+			return;
+		}
+
 		const ctx = {
 			api,
 			tasks,
@@ -91,39 +96,76 @@ export default function App() {
 	const viewLabel =
 		view.type === 'edit'
 			? `dewy ∙ edit: ${view.task.content}`
-			: `dewy ∙ ${view.query}`;
+			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query}`;
 
 	if (view.type === 'edit') {
 		return (
-			<Box flexDirection="column">
+			<Box flexDirection="column" paddingLeft={2}>
 				<Text bold color="cyan">
 					{viewLabel}
 				</Text>
-				<EditView
-					task={view.task}
-					api={api}
-					onBack={() => {
-						setView({type: 'filter', query: homeFilter});
-						refresh();
-					}}
-				/>
+				<Box
+					flexDirection="column"
+					borderStyle="round"
+					borderColor="cyan"
+					paddingX={1}
+				>
+					<EditView
+						task={view.task}
+						api={api}
+						onBack={() => {
+							setView({type: 'filter', query: homeFilter});
+							refresh();
+						}}
+					/>
+				</Box>
 			</Box>
 		);
 	}
 
 	return (
 		<Box flexDirection="column">
-			<Text bold color="cyan">
-				{viewLabel}
-			</Text>
-			<TaskListView
-				tasks={tasks}
-				projects={projects}
-				message={message}
-				input={input}
-				setInput={setInput}
-				onSubmit={handleSubmit}
-			/>
+			<Box flexDirection="column" paddingLeft={2}>
+				<TaskListView tasks={tasks} projects={projects} viewLabel={viewLabel} />
+				{message && <Text color="yellow">{message}</Text>}
+			</Box>
+			<Box
+				flexDirection="column"
+				borderStyle="single"
+				borderColor="gray"
+				borderLeft={false}
+				borderRight={false}
+			>
+				<Box>
+					<Text bold color="white">
+						{'> '}
+					</Text>
+					<TextInput
+						value={input}
+						onChange={setInput}
+						onSubmit={handleSubmit}
+					/>
+				</Box>
+			</Box>
+			{input === '?' ? (
+				commands.map(c => (
+					<Text key={c.prefix} dimColor>
+						{'  '}
+						{c.hint}
+					</Text>
+				))
+			) : input ? (
+				commands
+					.filter(c => c.prefix.startsWith(input))
+					.map(c => (
+						<Text key={c.prefix} dimColor>
+							{'  '}
+							{c.hint}
+						</Text>
+					))
+			) : (
+				<Text dimColor>{'  type ? for help'}</Text>
+			)}
 		</Box>
 	);
 }

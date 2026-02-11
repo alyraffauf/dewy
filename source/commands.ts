@@ -8,7 +8,6 @@ export type CommandContext = {
 	projects: Map<string, string>;
 	homeFilter: string;
 	setMessage: (msg: string) => void;
-
 	refresh: () => Promise<void>;
 	setView: (view: View) => void;
 	exit: () => void;
