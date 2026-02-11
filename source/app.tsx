@@ -3,14 +3,19 @@ import {Box, Text, useApp} from 'ink';
 import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {commands} from './commands.js';
+import {loadConfig, configPath} from './config.js';
 
-const token = process.env['TODOIST_API_TOKEN'];
-if (!token) {
-	console.error('Set TODOIST_API_TOKEN environment variable');
+const config = loadConfig();
+const apiToken = config?.apiToken ?? process.env['TODOIST_API_TOKEN'];
+
+if (!apiToken) {
+	console.error(
+		`No API token found. Either:\n  1. Create ${configPath} with contents:\n     { "apiToken": "your-todoist-api-token" }\n  2. Set the TODOIST_API_TOKEN environment variable`,
+	);
 	process.exit(1);
 }
 
-const api = new TodoistApi(token);
+const api = new TodoistApi(apiToken);
 
 export default function App() {
 	const {exit} = useApp();
