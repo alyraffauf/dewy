@@ -10,3 +10,31 @@ export function priorityColor(displayPriority: number): string | undefined {
 			return undefined;
 	}
 }
+
+export type ContentSegment =
+	| {type: 'text'; text: string}
+	| {type: 'link'; text: string; url: string};
+
+export function parseMdLink(content: string): ContentSegment[] {
+	const segments: ContentSegment[] = [];
+	const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+	let lastIndex = 0;
+	let match;
+
+	while ((match = linkPattern.exec(content)) !== null) {
+		if (match.index > lastIndex) {
+			segments.push({type: 'text', text: content.slice(lastIndex, match.index)});
+		}
+
+		segments.push({type: 'link', text: match[1]!, url: match[2]!});
+		lastIndex = match.index + match[0].length;
+	}
+
+	if (lastIndex < content.length) {
+		segments.push({type: 'text', text: content.slice(lastIndex)});
+	}
+
+	return segments;
+}
+

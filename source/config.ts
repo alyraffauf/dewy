@@ -1,6 +1,5 @@
 import {mkdirSync, readFileSync, writeFileSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
-// @ts-expect-error no type declarations
 import xdg from '@folder/xdg';
 
 export type Config = {
