@@ -17,17 +17,26 @@ export type ContentSegment =
 
 export function parseMdLink(content: string): ContentSegment[] {
 	const segments: ContentSegment[] = [];
-	const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+	const linkPattern =
+		/\[((?:\[[^\]]*\]|[^\]])+)\]\(([^)]+)\)|(https?:\/\/[^\s)]+)/g;
 
 	let lastIndex = 0;
 	let match;
 
 	while ((match = linkPattern.exec(content)) !== null) {
 		if (match.index > lastIndex) {
-			segments.push({type: 'text', text: content.slice(lastIndex, match.index)});
+			segments.push({
+				type: 'text',
+				text: content.slice(lastIndex, match.index),
+			});
 		}
 
-		segments.push({type: 'link', text: match[1]!, url: match[2]!});
+		if (match[1] && match[2]) {
+			segments.push({type: 'link', text: match[1], url: match[2]});
+		} else if (match[3]) {
+			segments.push({type: 'link', text: match[3], url: match[3]});
+		}
+
 		lastIndex = match.index + match[0].length;
 	}
 
@@ -37,4 +46,3 @@ export function parseMdLink(content: string): ContentSegment[] {
 
 	return segments;
 }
-
