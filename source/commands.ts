@@ -8,6 +8,7 @@ export type CommandContext = {
 	projects: Map<string, string>;
 	homeFilter: string;
 	setMessage: (msg: string) => void;
+	setTasks: (tasks: Task[]) => void;
 	refresh: () => Promise<void>;
 	setView: (view: View) => void;
 	exit: () => void;
@@ -22,13 +23,12 @@ export const commands: Command[] = [
 	{
 		prefix: 'done ',
 		hint: 'done <number>',
-		run: async (args, {api, tasks, setMessage, refresh}) => {
+		run: async (args, {api, tasks, setTasks, setMessage}) => {
 			const num = Number.parseInt(args, 10);
 			const task = tasks[num - 1];
 			if (task) {
 				await api.closeTask(task.id);
-				setMessage(`✓ ${task.content}`);
-				await refresh();
+				setTasks(tasks.filter(t => t.id !== task.id));
 			} else {
 				setMessage(`No task #${num}`);
 			}
@@ -52,44 +52,39 @@ export const commands: Command[] = [
 	{
 		prefix: 'add ',
 		hint: 'add <task>',
-		run: async (args, {api, setMessage, refresh}) => {
-			await api.quickAddTask({text: args});
-			setMessage(`+ ${args}`);
-			await refresh();
+		run: async (args, {api, tasks, setTasks}) => {
+			const task = await api.quickAddTask({text: args});
+			setTasks([...tasks, task]);
 		},
 	},
 	{
 		prefix: 'filter ',
 		hint: 'filter <query>',
-		run: async (args, {setMessage, setView}) => {
+		run: async (args, {setView}) => {
 			setView({type: 'filter', query: args});
-			setMessage('⊳ filtered');
 		},
 	},
 	{
 		prefix: 'refresh',
 		hint: 'refresh',
-		run: async (_args, {refresh, setMessage}) => {
+		run: async (_args, {refresh}) => {
 			await refresh();
-			setMessage('↻ refreshed');
 		},
 	},
 
 	{
 		prefix: 'today',
 		hint: 'today',
-		run: async (_args, {setView, setMessage}) => {
+		run: async (_args, {setView}) => {
 			setView({type: 'filter', query: 'today'});
-			setMessage('→ today');
 		},
 	},
 
 	{
 		prefix: 'home',
 		hint: 'home',
-		run: async (_args, {setView, setMessage, homeFilter}) => {
+		run: async (_args, {setView, homeFilter}) => {
 			setView({type: 'filter', query: homeFilter});
-			setMessage('→ home');
 		},
 	},
 

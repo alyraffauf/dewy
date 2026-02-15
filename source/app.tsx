@@ -131,6 +131,7 @@ export default function App() {
 	const handleSubmit = async (value: string) => {
 		const trimmed = value.trim();
 		setInput('');
+		setMessage('');
 
 		if (!trimmed || trimmed === '?') {
 			return;
@@ -142,6 +143,7 @@ export default function App() {
 			projects,
 			homeFilter,
 			setMessage,
+			setTasks,
 			refresh,
 			setView,
 			exit,
@@ -157,23 +159,19 @@ export default function App() {
 		}
 	};
 
-	if (loading) {
-		return (
-			<Text>
-				<Text color="cyan">
-					<Spinner type="dots" />
-				</Text>{' '}
-				Loading
-			</Text>
-		);
-	}
+	const refreshIndicator = loading && (
+		<Text color="cyan">
+			{' '}
+			<Spinner type="dots" />
+		</Text>
+	);
 
 	const viewLabel =
 		view.type === 'edit'
 			? `dewy ∙ edit: ${view.task.content}`
 			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query} ∙ ${
 					tasks.length
-			  } ${tasks.length === 1 ? 'item' : 'items'}`;
+				} ${tasks.length === 1 ? 'item' : 'items'}`;
 
 	const isEditing = view.type === 'edit';
 
@@ -182,6 +180,7 @@ export default function App() {
 			<Box flexDirection="column" paddingLeft={2}>
 				<Text bold color="cyan">
 					{viewLabel}
+					{refreshIndicator}
 				</Text>
 				{isEditing ? (
 					<>
@@ -219,7 +218,7 @@ export default function App() {
 						>
 							<TaskListView tasks={tasks} projects={projects} />
 						</Box>
-						{message && <Text color="yellow">{message}</Text>}
+						<Text color="yellow">{message || ' '}</Text>
 					</>
 				)}
 			</Box>
