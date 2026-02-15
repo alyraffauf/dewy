@@ -151,7 +151,9 @@ export default function App() {
 	const viewLabel =
 		view.type === 'edit'
 			? `dewy ∙ edit: ${view.task.content}`
-			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query}`;
+			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query} ∙ ${
+					tasks.length
+			  } ${tasks.length === 1 ? 'item' : 'items'}`;
 
 	const isEditing = view.type === 'edit';
 
