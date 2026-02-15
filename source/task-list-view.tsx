@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text} from 'ink';
+import {Box, Text} from 'ink';
 import Link from 'ink-link';
 import {type Task} from '@doist/todoist-api-typescript';
 import {parseMdLink, priorityColor} from './utils.js';
@@ -70,17 +70,23 @@ function Priority({priority}: {priority: number}) {
 }
 
 export default function TaskListView({tasks, projects}: TaskListViewProps) {
+	const numWidth = String(tasks.length).length;
 	return (
 		<>
 			{tasks.length === 0 && <Text dimColor>No tasks</Text>}
 			{tasks.map((task, i) => (
-				<Text key={task.id}>
-					<Text dimColor>{i + 1}.</Text> <Content text={task.content} />
-					<ProjectLabel name={projects.get(task.projectId)} />
-					<Labels labels={task.labels} />
-					<DueDate date={task.due?.date} />
-					<Priority priority={task.priority} />
-				</Text>
+				<Box key={task.id}>
+					<Box width={numWidth + 2} flexShrink={0}>
+						<Text dimColor>{String(i + 1).padStart(numWidth)}.</Text>
+					</Box>
+					<Text wrap="wrap">
+						<Content text={task.content} />
+						<ProjectLabel name={projects.get(task.projectId)} />
+						<Labels labels={task.labels} />
+						<DueDate date={task.due?.date} />
+						<Priority priority={task.priority} />
+					</Text>
+				</Box>
 			))}
 		</>
 	);
