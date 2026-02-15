@@ -16,7 +16,7 @@ function Content({text}: {text: string}) {
 			{segments.map((seg, i) =>
 				seg.type === 'link' ? (
 					<Link key={i} url={seg.url}>
-						<Text color="cyan">{seg.text}</Text>
+						<Text color="cyan">↗ {seg.text}</Text>
 					</Link>
 				) : (
 					<Text key={i}>{seg.text}</Text>
