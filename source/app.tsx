@@ -21,6 +21,10 @@ if (!apiToken) {
 
 const api = new TodoistApi(apiToken);
 
+const PROJECT_CACHE_TTL = 5 * 60 * 1000;
+let cachedProjects: Map<string, string> | null = null;
+let cachedProjectsAt = 0;
+
 function CommandHints({input}: {input: string}) {
 	if (input === '?') {
 		return commands.map(c => (
@@ -97,17 +101,25 @@ export default function App() {
 
 		setLoading(true);
 
+		const projectsStale =
+			!cachedProjects || Date.now() - cachedProjectsAt > PROJECT_CACHE_TTL;
+
 		const [taskResponse, projectResponse] = await Promise.all([
 			api.getTasksByFilter({query: view.query}),
-			api.getProjects(),
+			projectsStale ? api.getProjects() : null,
 		]);
 
-		const projectMap = new Map<string, string>();
-		for (const project of projectResponse.results) {
-			projectMap.set(project.id, project.name);
+		if (projectResponse) {
+			const projectMap = new Map<string, string>();
+			for (const project of projectResponse.results) {
+				projectMap.set(project.id, project.name);
+			}
+
+			cachedProjects = projectMap;
+			cachedProjectsAt = Date.now();
 		}
 
-		setProjects(projectMap);
+		setProjects(cachedProjects!);
 		setTasks(taskResponse.results);
 		setLoading(false);
 	}, [view]);
