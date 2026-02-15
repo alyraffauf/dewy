@@ -19,7 +19,9 @@ function Content({text}: {text: string}) {
 						<Text color="cyan">↗ {seg.text}</Text>
 					</Link>
 				) : (
-					<Text key={i}>{seg.text}</Text>
+					<Text key={i} bold>
+						{seg.text}
+					</Text>
 				),
 			)}
 		</>
