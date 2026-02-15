@@ -1,32 +1,13 @@
 import React from 'react';
 import {Box, Text} from 'ink';
-import Link from 'ink-link';
 import {type Task} from '@doist/todoist-api-typescript';
-import {parseMdLink, priorityColor} from './utils.js';
+import {priorityColor} from './utils.js';
+import {Content} from './content.js';
 
 type TaskListViewProps = {
 	tasks: Task[];
 	projects: Map<string, string>;
 };
-
-function Content({text}: {text: string}) {
-	const segments = parseMdLink(text);
-	return (
-		<>
-			{segments.map((seg, i) =>
-				seg.type === 'link' ? (
-					<Link key={i} url={seg.url}>
-						<Text color="cyan">↗ {seg.text}</Text>
-					</Link>
-				) : (
-					<Text key={i} bold>
-						{seg.text}
-					</Text>
-				),
-			)}
-		</>
-	);
-}
 
 function ProjectLabel({name}: {name: string | undefined}) {
 	if (!name) return null;
@@ -80,7 +61,7 @@ export default function TaskListView({tasks, projects}: TaskListViewProps) {
 						<Text dimColor>{String(i + 1).padStart(numWidth)}.</Text>
 					</Box>
 					<Text wrap="wrap">
-						<Content text={task.content} />
+						<Content text={task.content} bold />
 						<ProjectLabel name={projects.get(task.projectId)} />
 						<Labels labels={task.labels} />
 						<DueDate date={task.due?.date} />

@@ -5,7 +5,7 @@ import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {type View, commands} from './commands.js';
 import {loadConfig, configPath} from './config.js';
-import EditView from './edit-view.js';
+import {Content} from './content.js';
 import TaskListView from './task-list-view.js';
 
 const config = loadConfig();
@@ -92,13 +92,8 @@ export default function App() {
 	const [loading, setLoading] = useState(true);
 	const [input, setInput] = useState('');
 	const [message, setMessage] = useState('');
-	const [editingField, setEditingField] = useState(false);
 
 	const refresh = useCallback(async () => {
-		if (view.type === 'edit') {
-			return;
-		}
-
 		setLoading(true);
 
 		const projectsStale =
@@ -155,7 +150,7 @@ export default function App() {
 			const args = trimmed.slice(command.prefix.length);
 			await command.run(args, ctx);
 		} else {
-			setMessage(`Unknown command: ${trimmed}`);
+			setMessage(`Unknown command: ${trimmed}. Type ? for help`);
 		}
 	};
 
@@ -166,14 +161,9 @@ export default function App() {
 		</Text>
 	);
 
-	const viewLabel =
-		view.type === 'edit'
-			? `dewy ∙ edit: ${view.task.content}`
-			: `dewy ∙ ${view.query === homeFilter ? 'home' : view.query} ∙ ${
-					tasks.length
-				} ${tasks.length === 1 ? 'item' : 'items'}`;
-
-	const isEditing = view.type === 'edit';
+	const viewLabel = `dewy ∙ ${
+		view.query === homeFilter ? 'home' : view.query
+	} ∙ ${tasks.length} ${tasks.length === 1 ? 'item' : 'items'}`;
 
 	return (
 		<Box flexDirection="column">
@@ -182,53 +172,17 @@ export default function App() {
 					{viewLabel}
 					{refreshIndicator}
 				</Text>
-				{isEditing ? (
-					<>
-						<Box
-							flexDirection="column"
-							borderStyle="round"
-							borderColor="cyan"
-							paddingX={1}
-							width={50}
-						>
-							<EditView
-								task={view.task}
-								api={api}
-								onBack={() => {
-									setView({type: 'filter', query: homeFilter});
-									refresh();
-								}}
-								onEditingChange={setEditingField}
-							/>
-						</Box>
-						<Text dimColor>
-							{'  '}
-							{editingField
-								? 'Enter to save ∙ Escape to cancel'
-								: 'Enter to edit ∙ Escape to go back'}
-						</Text>
-					</>
-				) : (
-					<>
-						<Box
-							flexDirection="column"
-							borderStyle="round"
-							borderColor="cyan"
-							paddingX={1}
-						>
-							<TaskListView tasks={tasks} projects={projects} />
-						</Box>
-						<Text color="yellow">{message || ' '}</Text>
-					</>
-				)}
+				<Box
+					flexDirection="column"
+					borderStyle="round"
+					borderColor="cyan"
+					paddingX={1}
+				>
+					<TaskListView tasks={tasks} projects={projects} />
+				</Box>
+				<Text color="yellow">{message ? <Content text={message} /> : ' '}</Text>
 			</Box>
-			{!isEditing && (
-				<CommandInput
-					input={input}
-					setInput={setInput}
-					onSubmit={handleSubmit}
-				/>
-			)}
+			<CommandInput input={input} setInput={setInput} onSubmit={handleSubmit} />
 		</Box>
 	);
 }
