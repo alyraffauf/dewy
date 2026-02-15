@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Box, Text, useApp} from 'ink';
+import Spinner from 'ink-spinner';
 import TextInput from 'ink-text-input';
 import {TodoistApi, type Task} from '@doist/todoist-api-typescript';
 import {type View, commands} from './commands.js';
@@ -145,7 +146,14 @@ export default function App() {
 	};
 
 	if (loading) {
-		return <Text>Loading tasks...</Text>;
+		return (
+			<Text>
+				<Text color="cyan">
+					<Spinner type="dots" />
+				</Text>{' '}
+				Loading
+			</Text>
+		);
 	}
 
 	const viewLabel =
