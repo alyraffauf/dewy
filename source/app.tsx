@@ -25,14 +25,28 @@ const PROJECT_CACHE_TTL = 5 * 60 * 1000;
 let cachedProjects: Map<string, string> | null = null;
 let cachedProjectsAt = 0;
 
+const HINT_PAD = 26;
+
 function CommandHints({input}: {input: string}) {
 	if (input === '?') {
-		return commands.map(c => (
-			<Text key={c.prefix} dimColor>
-				{'  '}
-				{c.hint}
-			</Text>
-		));
+		const elements: React.ReactNode[] = [];
+		let lastGroup = '';
+		for (const c of commands) {
+			if (c.group !== lastGroup && lastGroup) {
+				elements.push(<Text key={`sep-${c.group}`}> </Text>);
+			}
+
+			lastGroup = c.group;
+			elements.push(
+				<Text key={c.prefix} dimColor>
+					{'  '}
+					{c.hint.padEnd(HINT_PAD)}
+					{c.description}
+				</Text>,
+			);
+		}
+
+		return <>{elements}</>;
 	}
 
 	if (input) {
@@ -41,7 +55,8 @@ function CommandHints({input}: {input: string}) {
 			.map(c => (
 				<Text key={c.prefix} dimColor>
 					{'  '}
-					{c.hint}
+					{c.hint.padEnd(HINT_PAD)}
+					{c.description}
 				</Text>
 			));
 	}

@@ -16,13 +16,17 @@ export type CommandContext = {
 type Command = {
 	prefix: string;
 	hint: string;
+	description: string;
+	group: 'tasks' | 'nav' | 'app';
 	run: (args: string, ctx: CommandContext) => Promise<void>;
 };
 
 export const commands: Command[] = [
 	{
 		prefix: 'done ',
-		hint: 'done <number>',
+		hint: 'done <n>',
+		description: 'complete a task',
+		group: 'tasks',
 		run: async (args, {api, tasks, setTasks, setMessage}) => {
 			const num = Number.parseInt(args, 10);
 			const task = tasks[num - 1];
@@ -37,7 +41,9 @@ export const commands: Command[] = [
 
 	{
 		prefix: 'edit ',
-		hint: 'edit <n> [due|p1-p4|labels|desc|project|title]',
+		hint: 'edit <n> <field> <value>',
+		description: 'edit a task field',
+		group: 'tasks',
 		run: async (args, {api, tasks, projects, setTasks, setMessage}) => {
 			const spaceIdx = args.indexOf(' ');
 			const numStr = spaceIdx === -1 ? args : args.slice(0, spaceIdx);
@@ -105,7 +111,9 @@ export const commands: Command[] = [
 
 	{
 		prefix: 'desc ',
-		hint: 'desc <number>',
+		hint: 'desc <n>',
+		description: 'show task description',
+		group: 'tasks',
 		run: async (args, {tasks, setMessage}) => {
 			const num = Number.parseInt(args, 10);
 			const task = tasks[num - 1];
@@ -120,6 +128,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'add ',
 		hint: 'add <task>',
+		description: 'add a new task',
+		group: 'tasks',
 		run: async (args, {api, tasks, setTasks}) => {
 			const task = await api.quickAddTask({text: args});
 			setTasks([...tasks, task]);
@@ -128,6 +138,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'filter ',
 		hint: 'filter <query>',
+		description: 'filter tasks',
+		group: 'nav',
 		run: async (args, {setView}) => {
 			setView({type: 'filter', query: args});
 		},
@@ -135,6 +147,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'refresh',
 		hint: 'refresh',
+		description: 'refresh tasks',
+		group: 'nav',
 		run: async (_args, {refresh}) => {
 			await refresh();
 		},
@@ -143,6 +157,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'today',
 		hint: 'today',
+		description: "show today's tasks",
+		group: 'nav',
 		run: async (_args, {setView}) => {
 			setView({type: 'filter', query: 'today'});
 		},
@@ -151,6 +167,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'home',
 		hint: 'home',
+		description: 'go to home view',
+		group: 'nav',
 		run: async (_args, {setView, homeFilter}) => {
 			setView({type: 'filter', query: homeFilter});
 		},
@@ -159,6 +177,8 @@ export const commands: Command[] = [
 	{
 		prefix: 'quit',
 		hint: 'quit',
+		description: 'exit dewy',
+		group: 'app',
 		run: async (_args, {exit}) => {
 			exit();
 		},
