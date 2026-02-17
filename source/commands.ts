@@ -130,9 +130,10 @@ export const commands: Command[] = [
 		hint: 'add <task>',
 		description: 'add a new task',
 		group: 'tasks',
-		run: async (args, {api, tasks, setTasks}) => {
-			const task = await api.quickAddTask({text: args});
-			setTasks([...tasks, task]);
+		run: async (args, {api, setMessage, refresh}) => {
+			await api.quickAddTask({text: args});
+			setMessage(`Added: ${args}`);
+			refresh();
 		},
 	},
 	{
