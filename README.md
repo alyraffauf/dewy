@@ -51,23 +51,23 @@ dewy
 
 ## Configuration
 
-| Key | Type | Required | Description |
-|-----|------|----------|-------------|
-| `apiToken` | `string` | yes | Your Todoist API token |
-| `homeFilter` | `string` | no | Todoist filter for the home view (default: `today`) |
+| Key          | Type     | Required | Description                                         |
+| ------------ | -------- | -------- | --------------------------------------------------- |
+| `apiToken`   | `string` | yes      | Your Todoist API token                              |
+| `homeFilter` | `string` | no       | Todoist filter for the home view (default: `today`) |
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `add <task>` | Add a task via quick add |
-| `done <number>` | Complete a task by its number |
-| `edit <number>` | Edit a task's fields inline |
+| Command          | Description                          |
+| ---------------- | ------------------------------------ |
+| `add <task>`     | Add a task via quick add             |
+| `done <number>`  | Complete a task by its number        |
+| `edit <number>`  | Edit a task's fields inline          |
 | `filter <query>` | View tasks matching a Todoist filter |
-| `today` | View today's tasks |
-| `home` | View the home filter |
-| `refresh` | Reload tasks |
-| `quit` | Exit |
+| `today`          | View today's tasks                   |
+| `home`           | View the home filter                 |
+| `refresh`        | Reload tasks                         |
+| `quit`           | Exit                                 |
 
 ## License
 
